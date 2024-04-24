@@ -1,13 +1,13 @@
 
 import 'package:flutter/material.dart';
-import 'package:hanaso_front/page/sign_in/sign_in.dart';
+import 'package:hanaso_front/page/sign_in/log_in.dart';
 import 'package:hanaso_front/page/home/home.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -16,14 +16,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Mudol',
+        title: 'hanaso',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.orangeAccent),
             fontFamily: 'NanumSquareBold',
             useMaterial3: true),
-        //home: LoginScreen()
-      home: Home()
+        home: LoginScreen()
+      //home: const Home()
     );
 
   }

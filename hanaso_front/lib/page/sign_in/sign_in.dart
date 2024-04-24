@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hanaso_front/page/sign_in/sign_in_controller.dart';
 import 'package:hanaso_front/page/sign_up/sign_up.dart';
 
-class LoginScreen extends StatefulWidget {
+class SignInScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignInScreenState createState() => _SignInScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignInScreenState extends State<SignInScreen> {
   // SignInControllerのインスタンスを作成
   final SignInController _controller = SignInController();
 

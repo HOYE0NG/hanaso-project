@@ -4,44 +4,47 @@ class SpeakingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('hanaso'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.account_circle),
-            onPressed: () {
-              // アカウントアクション
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: Container(
+        margin: const EdgeInsets.only(left: 12.0, right: 12.0),
         child: ListView(
           children: [
-            Text('추천 테마',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            // ここにカテゴリーグリッドリストを追加
-            _buildCategoryGrid(),
+            SizedBox(height: 15),
+            Container(
+              margin: const EdgeInsets.only(left: 20.0, top: 10.0),
+              child: Text('추천 테마',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
+            // ここにカテゴリーグリッドリストを追加(category grid list)
+            Container(
+              margin: const EdgeInsets.only(
+                  top: 15.0, left: 15.0, right: 15.0, bottom: 15.0),
+              child: _buildCategoryGrid(),
+            ),
             SizedBox(height: 20),
-            Text('전체 테마',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Container(
+              margin: const EdgeInsets.only(left: 20.0, top: 10.0),
+              child: Text('전체 테마',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
             // ここに全てのカテゴリーリストを追加
-            _buildCategoryList(),
+            Container(
+              margin: const EdgeInsets.only(
+                  top: 15.0, left: 15.0, right: 15.0, bottom: 15.0),
+              child: _buildCategoryList(),
+            ),
           ],
         ),
       ),
-
     );
   }
 
   Widget _buildCategoryGrid() {
-    // カテゴリーの名前と画像のリスト
-    List<Map<String, String>> categories = [
-      {'name': '편의점에서', 'image': 'assets/convenience1.png'},
-      {'name': '공항에서', 'image': 'assets/airplane1.png'},
-      {'name': '영화관에서', 'image': 'assets/theater1.png'},
-      {'name': '식당에서', 'image': 'assets/restaurant1.png'},
+    // カテゴリーの名前と画像のリスト (static.. not using api;()
+    List<Map<String, dynamic>> categories = [
+      {'id':1,'name': '편의점에서', 'image': 'assets/convenience1.png'},
+      {'id':2,'name': '공항에서', 'image': 'assets/airplane1.png'},
+      {'id':3,'name': '영화관에서', 'image': 'assets/theater1.png'},
+      {'id':4,'name': '식당에서', 'image': 'assets/restaurant1.png'},
     ];
 
     // グリッドリストを作成
@@ -51,67 +54,64 @@ class SpeakingPage extends StatelessWidget {
       // スクロールしないように設定
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 3 / 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+        childAspectRatio: 1.1,
+        crossAxisSpacing: 25,
+        mainAxisSpacing: 25,
       ),
       itemCount: categories.length,
       itemBuilder: (context, index) {
-    return GestureDetector(
-    onTap: () {
-      // カテゴリーに応じたアクションを定義
-      switch (index) {
-        case 0: // 「편의점에서」がタップされた時
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ConvenienceStorePage()),
-          );
-          break;
-        case 1: // 「공항에서」がタップされた時
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AirportPage()),
-          );
-          break;
-        case 2: // 「영화관에서」がタップされた時
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MovieTheaterPage()),
-          );
-          break;
-        case 3: // 「식당에서」がタップされた時
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => RestaurantPage()),
-          );
-          break;
-      }
-    },
-
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(categories[index]['image']!, width: 80, height: 80),
-              // 画像アイコン
-              SizedBox(height: 8),
-              // スペースを追加
-              Text(categories[index]['name']!),
-              // カテゴリー名
-            ],
-          ),
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return InkWell(
+              onTap: () {
+                navigateToPage(context, categories[index]['id']);
+              },
+              child: Container(
+                //margin: EdgeInsets.symmetric(horizontal: 10),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                        color: Colors.black.withOpacity(0.1), width: 1),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    // Align text to the start
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Image.asset(categories[index]['image']!,
+                              width: 80, height: 80),
+                        ),
+                      ),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(left: 10.0, bottom: 10.0),
+                        // Add padding to the left of the text
+                        child: Text(categories[index]['name']!),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildCategoryList() {  //dummy
+  Widget _buildCategoryList() {
+    //dummy (not using api, just static)
     // カテゴリーの名前と画像のリスト
     List<Map<String, dynamic>> categories = [
-      {'name': '공항에서', 'image': 'assets/airplane1.png'},
-      {'name': '식당에서', 'image': 'assets/restaurant1.png'},
-      {'name': '영화관에서', 'image': 'assets/theater1.png'},
-      {'name': '편의점에서', 'image': 'assets/convenience1.png'},
-      {'name': '호텔에서', 'image': 'assets/hotel.png'},
+      {'id':2,'name': '공항에서', 'image': 'assets/airplane1.png', 'level': 2},
+      {'id':4,'name': '식당에서', 'image': 'assets/restaurant1.png', 'level': 2},
+      {'id':3,'name': '영화관에서', 'image': 'assets/theater1.png', 'level': 2},
+      {'id':1,'name': '편의점에서', 'image': 'assets/convenience1.png', 'level': 2},
+      {'id':5,'name': '호텔에서', 'image': 'assets/hotel.png', 'level': 1},
 
       // その他のカテゴリー項目...
     ];
@@ -121,19 +121,31 @@ class SpeakingPage extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       itemCount: categories.length,
       itemBuilder: (context, index) {
-        return Card(
-          child: ListTile(
-            leading: Image.asset(
-              categories[index]['image'],
-              width: 56, // サイズは適宜調整
-              height: 56,
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12.0), // Add padding around each card
+          child: Card.outlined(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
+              borderRadius: BorderRadius.circular(6),
             ),
-            title: Text(categories[index]['name']),
-            trailing: Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              // タップされたときの動作をここに追加
-              // 例: Navigator.push(...)
-            },
+            child: InkWell(
+              child: ListTile(
+                leading: ClipOval(
+                  child: Image.asset(
+                    categories[index]['image'],
+                    width: 35, // Adjust the size as needed
+                    height: 35,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                title: Text(categories[index]['name']),
+                subtitle: Text('Level ${categories[index]['level']}'),
+                trailing: Icon(Icons.arrow_forward_ios),
+                onTap: () {
+                  navigateToPage(context, categories[index]['id']);
+                },
+              ),
+            ),
           ),
         );
       },
@@ -141,24 +153,70 @@ class SpeakingPage extends StatelessWidget {
   }
 }
 
+//how can i use this function both in grid and list?
+//-> add 'id' to the map and pass it to the function
+void navigateToPage(BuildContext context, int id) {
+  Widget page;
+  switch (id) {
+    case 1:
+      page = ConvenienceStorePage();
+      break;
+    case 2:
+      page = AirportPage();
+      break;
+    case 3:
+      page = MovieTheaterPage();
+      break;
+    case 4:
+      page = RestaurantPage();
+      break;
+    case 5:
+      page = RestaurantPage();
+      break;
+    default:
+      page = RestaurantPage(); // TODO: fix it to the default page
+      break;
+  }
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => page),
+  );
+}
+
+
+//TODO: it would be better to separate each page into different files(in my opinion!)
 // 以下のように各ページのダミークラスを作成します
 class ConvenienceStorePage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(appBar: AppBar(title: Text('편의점에서')));
+  Widget build(BuildContext context) =>
+      Scaffold(appBar: AppBar(title: Text('편의점에서')));
 }
 
 class AirportPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(appBar: AppBar(title: Text('공항에서')));
+  Widget build(BuildContext context) =>
+      Scaffold(appBar: AppBar(title: Text('공항에서')));
 }
 
 class MovieTheaterPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(appBar: AppBar(title: Text('영화관에서')));
+  Widget build(BuildContext context) =>
+      Scaffold(appBar: AppBar(title: Text('영화관에서')));
 }
 
 class RestaurantPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(appBar: AppBar(title: Text('식당에서')));
+  Widget build(BuildContext context) =>
+      Scaffold(appBar: AppBar(title: Text('식당에서')));
 }
-
+class HotelPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) =>
+      Scaffold(appBar: AppBar(title: Text('호텔에서')));
+}
+class DefaultPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) =>
+      Scaffold(appBar: AppBar(title: Text('기본페이지')));
+}
