@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hanaso_front/page/sign_in/sign_in.dart';
+import 'package:hanaso_front/page/sign_up/sign_up.dart';
 
 class LoginScreen extends StatelessWidget {
   @override
@@ -8,7 +10,7 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset('assets/logo.png'), // 로고 이미지. assets 폴더에 로고 이미지를 넣어주세요.
+            Image.asset('assets/logo.png'),
             Text(
               'hanaso',
               style: TextStyle(
@@ -22,12 +24,12 @@ class LoginScreen extends StatelessWidget {
                 // 로그인 버튼 클릭 시 로그인 페이지로 이동
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SignInPage()),
+                  MaterialPageRoute(builder: (context) => SignInScreen()),
                 );
               },
               child: Text('로그인'),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(200, 50), // 버튼 크기
+                minimumSize: Size(200, 50),
               ),
             ),
             SizedBox(height: 20), // 간격
@@ -36,12 +38,12 @@ class LoginScreen extends StatelessWidget {
                 // 회원가입 버튼 클릭 시 회원가입 페이지로 이동
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SignUpPage()),
+                  MaterialPageRoute(builder: (context) => SignUpScreen()),
                 );
               },
               child: Text('회원가입'),
               style: OutlinedButton.styleFrom(
-                minimumSize: Size(200, 50), // 버튼 크기
+                minimumSize: Size(200, 50),
               ),
             ),
           ],
@@ -51,18 +53,3 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-class SignInPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // 로그인 페이지 구현
-    return Scaffold();
-  }
-}
-
-class SignUpPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // 회원가입 페이지 구현
-    return Scaffold();
-  }
-}
