@@ -12,22 +12,20 @@ class SignInController {
     try {
       String username = usernameController.text;
       String password = passwordController.text;
+      //print(username+""+password);
       Response response = await _apiClient.login(username, password);
-
       if (response.statusCode == 200) {
         var username = response.data['username'];
         // ログイン情報を保存
         await saveLoginInfo(username);
         Navigator.of(context).pushReplacementNamed('/home');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('ログイン成功: $username')));
-      } else if (response.statusCode == 401) {
-        var reason = response.data['reason'];
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('ログイン失敗: $reason')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login success: $username')));
       } else {
+        //print(response);
         throw Exception('Unexpected error occurred.');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('ログインエラー: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${(e as CustomException).message}')));
     }
   }
 

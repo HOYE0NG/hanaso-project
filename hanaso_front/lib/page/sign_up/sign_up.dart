@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'sign_up_controller.dart';  // コントローラーをインポート
+import 'sign_up_controller.dart'; // コントローラーをインポート
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -18,23 +18,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Column(
           children: <Widget>[
             SizedBox(height: 15),
-            Image(image: _controller.displayImage, width: 120, height: 120), // 画像を表示
+            Image(image: _controller.displayImage, width: 120, height: 120),
+            // 画像を表示
             SizedBox(height: 15),
             ElevatedButton(
               onPressed: _controller.pickImage,
               child: Text('사진 업로드'),
             ),
-            TextField(
-              controller: _controller.usernameController,
-              decoration: InputDecoration(labelText: '사용자 이름'),
+            SizedBox(height: 15),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0), // 양옆에 빈 공간 추가
+              child: TextField(
+                controller: _controller.usernameController,
+                decoration: InputDecoration(labelText: '사용자 이름'),
+              ),
             ),
-            TextField(
-              controller: _controller.passwordController,
-              decoration: InputDecoration(labelText: '비밀번호'),
-              obscureText: true,
-
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0), // 양옆에 빈 공간 추가
+              child: TextField(
+                controller: _controller.passwordController,
+                decoration: InputDecoration(labelText: '비밀번호'),
+                obscureText: true,
+              ),
             ),
-
+            SizedBox(height: 15),
             ElevatedButton(
               onPressed: () => _controller.signUp(context),
               child: Text('계정생성'),

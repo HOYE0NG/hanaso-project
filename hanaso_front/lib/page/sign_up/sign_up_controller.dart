@@ -1,62 +1,57 @@
 import 'dart:io';
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
+import 'package:hanaso_front/service/api_client.dart';
 
 class SignUpController {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   File? _image;
-  ImageProvider<Object> displayImage = AssetImage('assets/default_avatar.png'); // デフォルト画像
+  ImageProvider<Object> displayImage =
+      AssetImage('assets/default_avatar.png'); // デフォルト画像
+  final ApiClient _apiClient = ApiClient();
 
   Future<void> signUp(BuildContext context) async {
-    String imageUrl = await uploadImage();
-    var url = Uri.parse('http://localhost:4000/api/users');
-    var response = await http.post(url, headers: {'Content-Type': 'application/json'}, body: jsonEncode({
-      'username': usernameController.text,
-      'password': passwordController.text,
-      'profileImg': imageUrl,
-    }));
-
-    if (response.statusCode == 200) {
-      Navigator.of(context).pushReplacementNamed('/home');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User registered successfully')));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to register user')));
+    if (usernameController.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('아이디를 입력해주세요.')));
+      return;
     }
-  }
-
-  Future<String> uploadImage() async {
-    var uri = Uri.parse('http://localhost:4000/api/img/upload');
-    var request = http.MultipartRequest('POST', uri);
-    if (_image == null) {
-      ByteData data = await rootBundle.load('assets/default_avatar.png');
-      List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-      request.files.add(http.MultipartFile.fromBytes(
-        'img',
-        bytes,
-        filename: 'default_avatar.png',
-        contentType: MediaType('image', 'png'),
-      ));
-    } else {
-      request.files.add(await http.MultipartFile.fromPath(
-        'img',
-        _image!.path,
-        contentType: MediaType('image', 'jpeg'),
-      ));
-      displayImage = FileImage(_image!) as ImageProvider<Object>;
+    else if (passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('비밀번호를 입력해주세요.')));
+      return;
     }
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      var responseData = await response.stream.bytesToString();
-      var result = jsonDecode(responseData);
-      return result['url'];
-    } else {
-      throw Exception('Failed to upload image');
+    else if (_image == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('이미지를 업로드해주세요.')));
+      return;
+    }
+    String imageUrl = await _apiClient.uploadImage(_image);
+    try {
+      Response response = await _apiClient.signUp(
+          usernameController.text, passwordController.text, imageUrl);
+      //print(response.statusCode);
+      if (response.statusCode == 200) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('회원가입에 성공했습니다.')));
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to register user')));
+      }
+    } catch (e) {
+      if (e is CustomException) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('${e.message}')));
+      } else if (e is FlutterError) {
+        print(e.message);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('${e.message}')));
+      } else {
+        throw e;
+      }
     }
   }
 

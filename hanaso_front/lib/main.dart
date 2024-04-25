@@ -22,7 +22,11 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.orangeAccent),
             fontFamily: 'NanumSquareBold',
             useMaterial3: true),
-        home: LoginScreen()
+        home: LoginScreen(),
+      routes: {
+        // Define the "/home" route.
+        '/home': (context) => Home(),
+      },
       //home: const Home()
     );
 

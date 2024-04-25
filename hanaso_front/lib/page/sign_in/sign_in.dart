@@ -28,15 +28,21 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TextField(
-              controller: _controller.usernameController,
-              decoration: InputDecoration(labelText: '사용자 이름'),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0), // 양옆에 빈 공간 추가
+              child: TextField(
+                controller: _controller.usernameController,
+                decoration: InputDecoration(labelText: '사용자 이름'),
+              ),
             ),
             SizedBox(height: 8),
-            TextField(
-              controller: _controller.passwordController,
-              decoration: InputDecoration(labelText: '비밀번호'),
-              obscureText: true,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0), // 양옆에 빈 공간 추가
+              child: TextField(
+                controller: _controller.passwordController,
+                decoration: InputDecoration(labelText: '비밀번호'),
+                obscureText: true,
+              ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
