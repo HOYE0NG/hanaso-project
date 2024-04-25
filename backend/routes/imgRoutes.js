@@ -30,5 +30,10 @@ router.post('/upload', upload.single('img'), (req, res) => {
     console.log(req.file);
     res.json({ url : `/${req.file.filename}`});
 })
+// 프론트로 이미지 보내기
+router.get('/:img', (req, res) => {
+    res.sendFile(path.join(__dirname, '../uploads', req.params.img));
+});
+
 
 module.exports = router;

@@ -9,15 +9,16 @@ const errorMessages = require('../utils/errorMessages');
 
 //Login
 router.post('/login', isNotLoggedIn, async(req, res, next) => {
+    console.log(req.body);
     passport.authenticate('local',  (err, user, info) => {
 
         if (err) {
-       //     console.error(err);
+            console.error(err);
             return next(err);
         }
 
         if (info) {
-        //    console.error(info);
+            console.error(info);
             return res.status(401).send(info.reason);
         }
 
@@ -32,7 +33,7 @@ router.post('/login', isNotLoggedIn, async(req, res, next) => {
                 const { password, ...userData } = user.toObject();
                 return res.json(userData);
             } catch (error) {
-             //   console.error(error);
+                console.error(error);
                 return res.status(500).json({ message: errorMessages.serverError });
             }
         });
@@ -45,12 +46,12 @@ router.get('/logout', isLoggedIn,  async(req, res) => {
 
     req.logout(function(err) {
         if (err) {
-       //     console.error(err);
+            console.error(err);
             return res.status(500).json({ message: errorMessages.logoutError });
         }
         req.session.destroy(function(err) {
             if (err) {
-         //       console.error(err);
+                console.error(err);
                 return res.status(500).json({ message: errorMessages.sessionError });
             }
             res.end();
@@ -68,8 +69,10 @@ router.post('/', isNotLoggedIn, async (req, res) => {
         return res.json(userData);
     } catch (err) {
         if (err.code === 11000 && err.keyPattern && err.keyPattern.username === 1) {
-            res.status(400).json({ message: errorMessages.duplicateUsername });
+            console.log(err);
+            res.status(409).json({ message: errorMessages.duplicateUsername });
         } else {
+            console.log(err);
             res.status(400).json({ message: err.message });
         }
     }
