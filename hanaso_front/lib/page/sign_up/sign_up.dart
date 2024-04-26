@@ -22,7 +22,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
             // 画像を表示
             SizedBox(height: 15),
             ElevatedButton(
-              onPressed: _controller.pickImage,
+              onPressed: () async {
+                await _controller.pickImage();
+                setState(() {}); // 상태를 업데이트하고 UI를 다시 빌드합니다.
+              },
               child: Text('사진 업로드'),
             ),
             SizedBox(height: 15),

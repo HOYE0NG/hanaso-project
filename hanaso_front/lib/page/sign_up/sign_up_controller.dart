@@ -8,9 +8,10 @@ class SignUpController {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   File? _image;
+  final ApiClient _apiClient = ApiClient();
+
   ImageProvider<Object> displayImage =
       AssetImage('assets/default_avatar.png'); // デフォルト画像
-  final ApiClient _apiClient = ApiClient();
 
   Future<void> signUp(BuildContext context) async {
     if (usernameController.text.isEmpty) {

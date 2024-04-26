@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+//import user interface
+import 'package:hanaso_front/interface/user_interface.dart';
 
 class SpeakingPage extends StatelessWidget {
   @override
@@ -73,7 +75,9 @@ class SpeakingPage extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                        color: Colors.black.withOpacity(0.1), width: 1),
+                        color: kBorderColor.withOpacity(kBorderOpacity),
+                        width: kBorderWidth
+                    ),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -125,7 +129,8 @@ class SpeakingPage extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 12.0), // Add padding around each card
           child: Card.outlined(
             shape: RoundedRectangleBorder(
-              side: BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
+              side: BorderSide(color: kBorderColor.withOpacity(kBorderOpacity),
+                  width: kBorderWidth),
               borderRadius: BorderRadius.circular(6),
             ),
             child: InkWell(

@@ -15,7 +15,7 @@ class _HomeState extends State<Home> {
   int index = 0;
   final List<Widget> pages = [
     SpeakingPage(), // 홈 페이지
-    SpeakingPage(), // 홈 페이지
+    VocabularyPage(),  // 단어장 페이지
     SpeakingPage(), // 홈 페이지//TODO: 여기 수정하기
     SpeakingPage(), // 홈 페이지
     //VocabularyPage(), // 단어장 페이지
