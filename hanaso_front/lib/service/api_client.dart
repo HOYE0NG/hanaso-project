@@ -6,9 +6,9 @@ import 'package:http_parser/http_parser.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:hanaso_front/model/word.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:hanaso_front/interface/user_interface.dart';
 class CustomException implements Exception {
   final String message;
 
@@ -23,13 +23,38 @@ class ApiClient {
     _cookieJar = CookieJar();
     _dio = Dio();
     _dio.interceptors.add(CookieManager(_cookieJar));
+    _dio.interceptors.add(
+      //Cookie jar doesn't work with Dio's InterceptorsWrapper :(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async{
+          final prefs = await SharedPreferences.getInstance();
+          List<String>? cookies = prefs.getStringList('cookies');
+          if (cookies != null) {
+            options.headers['cookie'] = cookies.join('; ');
+          }
+          print('Request headers: ${options.headers}');
+          return handler.next(options); // continue// Print request headers
+
+        },
+        onResponse: (response, handler) async{
+          // Extract cookies from response headers and save them in CookieJar
+          var cookies = response.headers['set-cookie'];
+          print(cookies);
+          if (cookies != null) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setStringList('cookies', cookies);
+          }
+          return handler.next(response); // continueue
+        },
+      ),
+    );
   }
 
   Future<Response> signUp(
       String username, String password, String imageUrl) async {
     try {
       Response response = await _dio.post(
-        'http://10.0.2.2:4000/api/users',
+        'http://$BASE_URL/api/users',
         data: {
           'username': username,
           'password': password,
@@ -58,7 +83,7 @@ class ApiClient {
   }
 
   Future<String> uploadImage(File? image) async {
-    var uri = Uri.parse('http://10.0.2.2:4000/api/img/upload');
+    var uri = Uri.parse('$BASE_URL/api/img/upload');
     var request = http.MultipartRequest('POST', uri);
     if (image == null) {
       ByteData data = await rootBundle.load('assets/default_avatar.png');
@@ -90,7 +115,7 @@ class ApiClient {
   Future<void> logout() async {
     try {
       Response response =
-          await _dio.get('http://10.0.2.2:4000/api/users/logout');
+          await _dio.get('$BASE_URL/api/users/logout');
       if (response.statusCode != 200) {
         throw Exception('Failed to logout');
       }
@@ -102,7 +127,7 @@ class ApiClient {
   Future<Response> login(String username, String password) async {
     try {
       Response response = await _dio.post(
-        'http://10.0.2.2:4000/api/users/login',
+        '$BASE_URL/api/users/login',
         //in android studio, it uses 10.0.2.2 as localhost
         data: {'username': username, 'password': password},
       );
@@ -125,6 +150,36 @@ class ApiClient {
       } else {
         throw Exception('Failed to login: ${e.message}');
       }
+    }
+  }
+
+
+  Future<List<Word>> getWords(int id) async {
+    try {
+      Response response = await _dio.get('$BASE_URL/api/words/$id');
+      if (response.statusCode == 200) {
+        List<Word> words = (response.data as List).map((i) => Word.fromJson(i)).toList();
+        return words;
+      } else {
+        throw Exception('Failed to load words');
+      }
+    } catch (e) {
+      throw Exception('Failed to load words: $e');
+    }
+  }
+  Future<void> addFavorite(String id) async {
+    try {
+      await _dio.post('$BASE_URL/api/favorites', data: {'wordId': id});
+    } catch (e) {
+      throw Exception('Failed to add favorite: $e');
+    }
+  }
+
+  Future<void> removeFavorite(String id) async {
+    try {
+      await _dio.delete('$BASE_URL/api/favorites/$id');
+    } catch (e) {
+      throw Exception('Failed to remove favorite: $e');
     }
   }
 }

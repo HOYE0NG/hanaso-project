@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hanaso_front/interface/user_interface.dart';
+import 'package:hanaso_front/page/home/vocabulary_page/word_page.dart';
 
 class VocabularyPage extends StatelessWidget {
   @override
@@ -65,11 +66,11 @@ class VocabularyPage extends StatelessWidget {
     //dummy (not using api, just static)
     // カテゴリーの名前と画像のリスト
     List<Map<String, dynamic>> categories = [
-      {'id': 2, 'name': '공항에서', 'image': 'assets/airplane1.png', 'level': 2},
+      {'id': 1, 'name': '공항에서', 'image': 'assets/airplane1.png', 'level': 2},
       {'id': 4, 'name': '식당에서', 'image': 'assets/restaurant1.png', 'level': 2},
       {'id': 3, 'name': '영화관에서', 'image': 'assets/theater1.png', 'level': 2},
       {
-        'id': 1,
+        'id': 2,
         'name': '편의점에서',
         'image': 'assets/convenience1.png',
         'level': 2
@@ -119,71 +120,11 @@ class VocabularyPage extends StatelessWidget {
   }
 }
 
-//how can i use this function both in grid and list?
-//-> add 'id' to the map and pass it to the function
 void navigateToPage(BuildContext context, int id) {
-  Widget page;
-  switch (id) {
-    case 1:
-      page = ConvenienceStorePage();
-      break;
-    case 2:
-      page = AirportPage();
-      break;
-    case 3:
-      page = MovieTheaterPage();
-      break;
-    case 4:
-      page = RestaurantPage();
-      break;
-    case 5:
-      page = RestaurantPage();
-      break;
-    default:
-      page = RestaurantPage(); // TODO: fix it to the default page
-      break;
-  }
+  Widget page = WordPage(id: id);
 
   Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => page),
   );
-}
-
-//TODO: it would be better to separate each page into different files(in my opinion!)
-// 以下のように各ページのダミークラスを作成します
-class ConvenienceStorePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('편의점에서')));
-}
-
-class AirportPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('공항에서')));
-}
-
-class MovieTheaterPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('영화관에서')));
-}
-
-class RestaurantPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('식당에서')));
-}
-
-class HotelPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('호텔에서')));
-}
-
-class DefaultPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('기본페이지')));
 }
