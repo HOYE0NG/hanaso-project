@@ -28,7 +28,7 @@ router.post('/login', isNotLoggedIn, async(req, res, next) => {
                 console.error(loginErr);
                 return next(loginErr);
             }
-
+            console.log('Session: ', req.session);
             try {
                 const { password, ...userData } = user.toObject();
                 return res.json(userData);
