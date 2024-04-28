@@ -85,35 +85,11 @@ class VocabularyPage extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       itemCount: categories.length,
       itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
-          // Add padding around each card
-          child: Card.outlined(
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                  color: kBorderColor.withOpacity(kBorderOpacity),
-                  width: kBorderWidth),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: InkWell(
-              child: ListTile(
-                leading: ClipOval(
-                  child: Image.asset(
-                    categories[index]['image'],
-                    width: 35, // Adjust the size as needed
-                    height: 35,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                title: Text(categories[index]['name']),
-                subtitle: Text('Level ${categories[index]['level']}'),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  navigateToPage(context, categories[index]['id']);
-                },
-              ),
-            ),
-          ),
+        return CategoryCard(
+          category: categories[index],
+          onTap: () {
+            navigateToPage(context, categories[index]['id']);
+          },
         );
       },
     );

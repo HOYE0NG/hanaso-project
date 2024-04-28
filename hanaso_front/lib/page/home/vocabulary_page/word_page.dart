@@ -85,7 +85,7 @@ class _WordTileState extends State<WordTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0), // 위아래 간격 추가
+      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15.0),
       padding: EdgeInsets.symmetric(horizontal: 3.0), // 좌우 패딩 추가
       decoration: BoxDecoration(
        // border: Border.all(color: kBorderColor.withOpacity(kBorderOpacity), width: kBorderWidth), // 테두리 추가

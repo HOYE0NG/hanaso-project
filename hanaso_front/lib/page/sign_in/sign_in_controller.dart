@@ -18,8 +18,8 @@ class SignInController {
         var username = response.data['username'];
         // ログイン情報を保存
         await saveLoginInfo(username);
-        Navigator.of(context).pushReplacementNamed('/home');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login success: $username')));
+        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login successful.')));
       } else {
         //print(response);
         throw Exception('Unexpected error occurred.');

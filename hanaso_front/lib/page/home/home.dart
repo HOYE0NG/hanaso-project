@@ -3,7 +3,7 @@ import 'package:hanaso_front/page/home/speaking_page/speaking.dart';
 import 'package:hanaso_front/page/home/vocabulary_page/vocabulary.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:hanaso_front/interface/user_interface.dart';
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -14,12 +14,10 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int index = 0;
   final List<Widget> pages = [
-    SpeakingPage(), // 홈 페이지
+    SpeakingPage(),// 홈 페이지
     VocabularyPage(),  // 단어장 페이지
     SpeakingPage(), // 홈 페이지//TODO: 여기 수정하기
-    SpeakingPage(), // 홈 페이지
-    //VocabularyPage(), // 단어장 페이지
-    //MyPage(), // 마이 페이지
+    MyPage(), // 마이페이지
   ];
 
   @override
@@ -32,8 +30,8 @@ class _HomeState extends State<Home> {
           IconButton(
             icon: FutureBuilder<String>(
               future: SharedPreferences.getInstance().then((prefs) {
-                String? relativeUrl = prefs.getString('userProfileImageUrl');
-                return Future.value(relativeUrl != null ? 'http://10.0.2.2:4000/api/img' + relativeUrl : '');
+                  String? relativeUrl = prefs.getString('userProfileImageUrl');
+                  return Future.value(relativeUrl != null ? '$BASE_URL/api/img' + relativeUrl : '');
               }),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {

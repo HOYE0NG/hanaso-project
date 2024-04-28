@@ -63,6 +63,7 @@ class ApiClient {
       );
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('userProfileImageUrl', response.data['profileImg']);
+      await prefs.setString('username', response.data['username']);
       return response;
     } on DioException catch (e) {
       if (e.response != null) {
@@ -133,6 +134,7 @@ class ApiClient {
       );
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('userProfileImageUrl', response.data['profileImg']);
+      await prefs.setString('username', response.data['username']);
       return response;
     } on DioException catch (e) {
       if (e.response != null) {
