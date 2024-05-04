@@ -61,6 +61,7 @@ class ApiClient {
           'profileImg': imageUrl
         },
       );
+      //TODO: 중복?
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('userProfileImageUrl', response.data['profileImg']);
       await prefs.setString('username', response.data['username']);
@@ -132,9 +133,6 @@ class ApiClient {
         //in android studio, it uses 10.0.2.2 as localhost
         data: {'username': username, 'password': password},
       );
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userProfileImageUrl', response.data['profileImg']);
-      await prefs.setString('username', response.data['username']);
       return response;
     } on DioException catch (e) {
       if (e.response != null) {
@@ -184,4 +182,30 @@ class ApiClient {
       throw Exception('Failed to remove favorite: $e');
     }
   }
+
+
+  Future<bool> saveAttendanceToServer(String username, String date) async {
+    try {
+      var url = '$BASE_URL/api/users/attendance'; // Replace with your actual API endpoint
+      var response = await _dio.post(
+        url,
+        data: {
+          'date': date,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Attendance data saved successfully.');
+        return true;
+      } else {
+        print('Failed to save attendance data.');
+        return false;
+      }
+    } catch (e) {
+      print('Failed to save attendance data: $e');
+      return false;
+    }
+  }
 }
+
+

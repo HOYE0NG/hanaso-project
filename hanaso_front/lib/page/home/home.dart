@@ -1,6 +1,7 @@
 import 'package:hanaso_front/page/home/my_page/my_page.dart';
 import 'package:hanaso_front/page/home/speaking_page/speaking.dart';
 import 'package:hanaso_front/page/home/vocabulary_page/vocabulary.dart';
+import 'package:hanaso_front/page/home/home_page/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hanaso_front/interface/user_interface.dart';
@@ -14,7 +15,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int index = 0;
   final List<Widget> pages = [
-    SpeakingPage(),// 홈 페이지
+    HomePage(),// 홈 페이지
     VocabularyPage(),  // 단어장 페이지
     SpeakingPage(), // 홈 페이지//TODO: 여기 수정하기
     MyPage(), // 마이페이지
