@@ -5,6 +5,10 @@ const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique:true },
   password: { type: String, required: true, maxlength: 100 },
   profileImg: { type: String }, // 프로필 이미지 경로
+  attendance: { //출석체크
+    type: [Date],
+    default: []
+  }
 }, {
   versionKey: false});
 

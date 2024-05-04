@@ -28,9 +28,10 @@ router.post('/login', isNotLoggedIn, async(req, res, next) => {
                 console.error(loginErr);
                 return next(loginErr);
             }
-            console.log('Session: ', req.session);
+            //console.log('Session: ', req.session);
             try {
                 const { password, ...userData } = user.toObject();
+                console.log(userData);
                 return res.json(userData);
             } catch (error) {
                 console.error(error);
@@ -64,6 +65,7 @@ router.post('/', isNotLoggedIn, async (req, res) => {
     const user = new User(req.body);
 
     try {
+        console.log("user",user);
         await user.save();
         const { password, ...userData } = user.toObject();
         return res.json(userData);
@@ -94,4 +96,24 @@ router.put('/', isLoggedIn,async (req, res) => {
     }
 });
 
+//출석체크
+router.post('/attendance', isLoggedIn, async (req, res) => {
+    try {
+        console.log('attendance');
+        // Get the user from the request
+        const user = await User.findById(req.user.id);
+
+        // Get the date from the request body
+        const { date } = req.body;
+
+        // Save the attendance data
+        user.attendance.push(date);
+        await user.save();
+
+        res.json({ message: 'Attendance data saved successfully.' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
 module.exports = router;
