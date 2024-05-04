@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hanaso_front/model/word.dart';
 import 'package:hanaso_front/service/api_client.dart';
-import 'package:hanaso_front/interface/user_interface.dart';
 
 class WordPage extends StatefulWidget {
   final int id;

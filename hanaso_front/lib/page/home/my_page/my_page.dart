@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../interface/user_interface.dart';
+import '../../../service/api_client.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -100,8 +101,22 @@ class _MyPageState extends State<MyPage> {
                   ),
                 ),
                 CustomOutlinedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // Perform Logout
+                    bool success = await ApiClient().logout();
+                    if (success) {
+                      // Redirect to login page
+                      Navigator.of(context).pushReplacementNamed('/start');
+                      // Show success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Logout successful')),
+                      );
+                    } else {
+                      // Show error message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Logout failed')),
+                      );
+                    }
                   },
                   child: Row(
                     children: [

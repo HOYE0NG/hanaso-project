@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -54,17 +56,14 @@ class ApiClient {
       String username, String password, String imageUrl) async {
     try {
       Response response = await _dio.post(
-        'http://$BASE_URL/api/users',
+        '$BASE_URL/api/users',
         data: {
           'username': username,
           'password': password,
           'profileImg': imageUrl
         },
       );
-      //TODO: 중복?
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userProfileImageUrl', response.data['profileImg']);
-      await prefs.setString('username', response.data['username']);
+      login(username, password);
       return response;
     } on DioException catch (e) {
       if (e.response != null) {
@@ -114,12 +113,17 @@ class ApiClient {
     }
   }
 
-  Future<void> logout() async {
+  FutureOr<bool> logout() async {
     try {
       Response response =
           await _dio.get('$BASE_URL/api/users/logout');
       if (response.statusCode != 200) {
         throw Exception('Failed to logout');
+      }
+      else{
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.clear(); // Clear all data
+        return true;
       }
     } catch (e) {
       throw Exception('Failed to logout: $e');

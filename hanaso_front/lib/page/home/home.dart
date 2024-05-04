@@ -42,7 +42,14 @@ class _HomeState extends State<Home> {
                 } else {
                   return ClipOval(
                     child: Container(
-                      child: Image.network(snapshot.data!, fit: BoxFit.cover),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.black, // 외곽선의 색상
+                          width: 1, // 외곽선의 두께
+                        ),
+                        shape: BoxShape.circle, // 외곽선의 모양
+                      ),
+                      child: Image.network(snapshot.data!, fit: BoxFit.cover, width: 30, height: 30),
                     ),
                   );
                 }

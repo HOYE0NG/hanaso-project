@@ -18,7 +18,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Column(
           children: <Widget>[
             SizedBox(height: 15),
-            Image(image: _controller.displayImage, width: 120, height: 120),
+            ClipOval(
+              child: Image(
+                image: _controller.displayImage,
+                width: 120,
+                height: 120,
+                fit: BoxFit.cover, // 이미지가 ClipOval의 전체 공간을 채우도록 합니다.
+              ),
+            ),
             // 画像を表示
             SizedBox(height: 15),
             ElevatedButton(
