@@ -2,6 +2,8 @@ import 'package:hanaso_front/page/home/my_page/my_page.dart';
 import 'package:hanaso_front/page/home/speaking_page/speaking.dart';
 import 'package:hanaso_front/page/home/vocabulary_page/vocabulary.dart';
 import 'package:hanaso_front/page/home/home_page/home_page.dart';
+import 'package:hanaso_front/page/home/chat_page/chat_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hanaso_front/interface/user_interface.dart';
@@ -19,6 +21,7 @@ class _HomeState extends State<Home> {
     VocabularyPage(),  // 단어장 페이지
     SpeakingPage(), // 홈 페이지//TODO: 여기 수정하기
     MyPage(), // 마이페이지
+    ChatPage() // 자유대화->언어레벨측정 페이지
   ];
 
   @override
@@ -82,6 +85,10 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: '마이페이지',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.speaker),
+            label: '자기소개',
           ),
         ],
         currentIndex: index,
