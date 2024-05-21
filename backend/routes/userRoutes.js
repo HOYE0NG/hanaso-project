@@ -62,6 +62,7 @@ router.get('/logout', isLoggedIn,  async(req, res) => {
 
 // Create user
 router.post('/', isNotLoggedIn, async (req, res) => {
+    console.log("user ")
     const user = new User(req.body);
 
     try {
