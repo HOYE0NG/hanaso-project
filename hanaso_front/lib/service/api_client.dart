@@ -190,7 +190,7 @@ class ApiClient {
 
   Future<bool> saveAttendanceToServer(String username, String date) async {
     try {
-      var url = '$BASE_URL/api/users/attendance'; // Replace with your actual API endpoint
+      var url = '$BASE_URL/api/users/attendance';
       var response = await _dio.post(
         url,
         data: {

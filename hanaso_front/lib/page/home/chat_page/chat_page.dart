@@ -4,7 +4,6 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:hanaso_front/service/api_client.dart';
 
 import '../../../interface/user_interface.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -20,7 +19,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _sendMessage(String message) async {
     try {
-      final String apiUrl = 'http://localhost:4000/api/chat/';
+      final String apiUrl = '$BASE_URL/api/chat/';
       final http.Response response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
@@ -57,7 +56,7 @@ class _ChatPageState extends State<ChatPage> {
   // 대화 종료 시 서버로 대화 기록 전송
   Future<void> _endConversation() async {
     try {
-      final String apiUrl = 'http://localhost:4000/api/chat/score';
+      final String apiUrl = '$BASE_URL/api/chat/score';
       final http.Response response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
