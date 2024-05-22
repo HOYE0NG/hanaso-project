@@ -89,8 +89,35 @@ class _ChatPageState extends State<ChatPage> {
             child: ListView.builder(
               itemCount: _chatHistory.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_chatHistory[index]),
+                bool isUserMessage = _chatHistory[index].startsWith('You: ');
+                return Align(
+                  alignment: isUserMessage ? Alignment.centerRight : Alignment.centerLeft,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.7, // Set maximum width to 70% of screen width
+                    ),
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: isUserMessage ? Colors.orange[200] : Colors.grey[200],
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15),
+                          bottomLeft: isUserMessage ? Radius.circular(15) : Radius.circular(0),
+                          bottomRight: isUserMessage ? Radius.circular(0) : Radius.circular(15),
+                        ),
+                      ),
+                      child: Wrap(
+                        children: [
+                          Text(
+                            _chatHistory[index].replaceFirst(isUserMessage ? 'You: ' : 'maru: ', ''),
+                            style: TextStyle(color: isUserMessage ? Colors.white : Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
