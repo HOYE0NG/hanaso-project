@@ -11,6 +11,8 @@ import 'dart:io';
 import 'package:hanaso_front/model/word.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hanaso_front/interface/user_interface.dart';
+
+import '../model/sentence.dart';
 class CustomException implements Exception {
   final String message;
 
@@ -208,6 +210,18 @@ class ApiClient {
     } catch (e) {
       print('Failed to save attendance data: $e');
       return false;
+    }
+  }
+
+
+  Future<List<Sentence>> getSentences(int id) async {
+    Response response = await _dio.get('$BASE_URL/api/themes/$id');
+
+    if (response.statusCode == 200) {
+      List<Sentence> sentence = (response.data as List).map((i) => Sentence.fromJson(i)).toList();
+      return sentence;
+    } else {
+      throw Exception('Failed to load sentences');
     }
   }
 }

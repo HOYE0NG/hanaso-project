@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 //import user interface
 import 'package:hanaso_front/interface/user_interface.dart';
+import 'package:hanaso_front/page/home/speaking_page/sentence_page.dart';
 
 class SpeakingPage extends StatelessWidget {
   @override
@@ -136,70 +137,11 @@ class SpeakingPage extends StatelessWidget {
   }
 }
 
-//how can i use this function both in grid and list?
-//-> add 'id' to the map and pass it to the function
 void navigateToPage(BuildContext context, int id) {
-  Widget page;
-  switch (id) {
-    case 1:
-      page = ConvenienceStorePage();
-      break;
-    case 2:
-      page = AirportPage();
-      break;
-    case 3:
-      page = MovieTheaterPage();
-      break;
-    case 4:
-      page = RestaurantPage();
-      break;
-    case 5:
-      page = RestaurantPage();
-      break;
-    default:
-      page = RestaurantPage(); // TODO: fix it to the default page
-      break;
-  }
+  Widget page = SentencePage(theme: id);
 
   Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => page),
   );
-}
-
-
-//TODO: it would be better to separate each page into different files(in my opinion!)
-// 以下のように各ページのダミークラスを作成します
-class ConvenienceStorePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('편의점에서')));
-}
-
-class AirportPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('공항에서')));
-}
-
-class MovieTheaterPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('영화관에서')));
-}
-
-class RestaurantPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('식당에서')));
-}
-class HotelPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('호텔에서')));
-}
-class DefaultPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(appBar: AppBar(title: Text('기본페이지')));
 }
