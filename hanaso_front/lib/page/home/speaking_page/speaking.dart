@@ -67,7 +67,7 @@ class SpeakingPage extends StatelessWidget {
           builder: (BuildContext context, StateSetter setState) {
             return InkWell(
               onTap: () {
-                navigateToPage(context, categories[index]['id']);
+                navigateToPage(context, categories[index]['id'],categories[index]['name']);
               },
               child: Container(
                 //margin: EdgeInsets.symmetric(horizontal: 10),
@@ -129,7 +129,7 @@ class SpeakingPage extends StatelessWidget {
         return CategoryCard(
           category: categories[index],
           onTap: () {
-            navigateToPage(context, categories[index]['id']);
+            navigateToPage(context, categories[index]['id'],categories[index]['name']);
           },
         );
       },
@@ -137,8 +137,8 @@ class SpeakingPage extends StatelessWidget {
   }
 }
 
-void navigateToPage(BuildContext context, int id) {
-  Widget page = SentencePage(theme: id);
+void navigateToPage(BuildContext context, int id,String theme) {
+  Widget page = SentencePage(theme: id,themeName: theme);
 
   Navigator.push(
     context,

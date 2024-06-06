@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hanaso_front/model/sentence.dart';
 import 'package:hanaso_front/service/api_client.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class SentencePage extends StatefulWidget {
   final int theme;
+  final String themeName;
 
-  SentencePage({required this.theme});
+  SentencePage({required this.theme, required this.themeName});
 
   @override
   _SentencePageState createState() => _SentencePageState();
@@ -13,6 +15,8 @@ class SentencePage extends StatefulWidget {
 
 class _SentencePageState extends State<SentencePage> {
   late Future<List<Sentence>> futureSentences;
+  int currentIndex = 0; // Add this line
+  int totalLength = 0;
 
   @override
   void initState() {
@@ -23,17 +27,32 @@ class _SentencePageState extends State<SentencePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('테마별 연습')),
+      appBar: AppBar(title: Text('${widget.themeName}')),
       body: FutureBuilder<List<Sentence>>(
         future: futureSentences,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                return SentenceTile(sentence: snapshot.data![index]);
+            totalLength = snapshot.data!.length;
+            return SentenceTile(
+              sentence: snapshot.data![currentIndex],
+              currentIndex: currentIndex,
+              // Pass currentIndex to SentenceTile
+              totalLength: totalLength,
+              onNext: () {
+                setState(() {
+                  if (currentIndex < snapshot.data!.length - 1) {
+                    currentIndex++;
+                  }
+                });
               },
-            );
+              onPrev: () {
+                setState(() {
+                  if (currentIndex > 0) {
+                    currentIndex--;
+                  }
+                });
+              },
+            ); // Change this line
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
@@ -44,16 +63,151 @@ class _SentencePageState extends State<SentencePage> {
   }
 }
 
-class SentenceTile extends StatelessWidget {
-  final Sentence sentence;
+class _SentenceTileState extends State<SentenceTile> {
+  String? selectedChoice;
+  bool? isCorrect;
+  late List<String> shuffledChoices;
+  late AudioPlayer player;
 
-  SentenceTile({required this.sentence});
+  @override
+  void initState() {
+    super.initState();
+    shuffledChoices = List<String>.from(widget.sentence.choices);
+    shuffledChoices.shuffle();
+    player = AudioPlayer();
+  }
+
+  @override
+  void dispose() async {
+    // Be careful : you must `close` the audio session when you have finished with it.
+    player.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant SentenceTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.sentence != widget.sentence) {
+      shuffledChoices = List<String>.from(widget.sentence.choices);
+      shuffledChoices.shuffle();
+      setState(() {
+        selectedChoice = null;
+        isCorrect = null;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(sentence.sentence),
-      subtitle: Text(sentence.koreanMeaning),
+    String sentenceWithBlank = widget.sentence.sentence
+        .replaceAll(widget.sentence.blankWord, '______');
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '${widget.currentIndex + 1}/${widget.totalLength}',
+          // Display currentIndex and totalLength
+          style: TextStyle(fontSize: 24),
+        ),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.volume_up),
+                onPressed: null, // TODO: Implement playSentenceAudio function
+              ),
+              Text(
+                sentenceWithBlank,
+                style: TextStyle(fontSize: 24),
+              ),
+            ],
+
+        ),
+
+        Text(
+          widget.sentence.koreanMeaning,
+          style: TextStyle(fontSize: 18),
+        ),
+        ...shuffledChoices.map((choice) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            // Decrease vertical padding
+            child: ElevatedButton(
+              child: Text(
+                choice,
+                style: TextStyle(fontSize: 16),
+              ),
+              onPressed: () async {
+                setState(() {
+                  selectedChoice = choice;
+                  isCorrect = choice == widget.sentence.blankWord;
+                });
+                if (isCorrect!) {
+                  await player.play(AssetSource('correct_sound.mp3'));
+                } else {
+                  await player.play(AssetSource('wrong_sound.mp3'));
+                }
+              },
+            ),
+          );
+        }).toList(),
+        if (selectedChoice != null)
+          Text(
+            isCorrect! ? 'O' : 'X',
+            style: TextStyle(
+              fontSize: 30,
+              color: isCorrect! ? Colors.green : Colors.red,
+            ),
+          )
+        else
+          SizedBox(height: 45),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              child: Icon(Icons.arrow_back),
+              style: ElevatedButton.styleFrom(
+                shape: CircleBorder(),
+                padding: EdgeInsets.all(20),
+                disabledForegroundColor: Colors.transparent,
+                disabledBackgroundColor: Colors.transparent,
+              ),
+              onPressed: widget.currentIndex > 0 ? widget.onPrev : null,
+            ),
+            ElevatedButton(
+              child: Icon(Icons.arrow_forward),
+              style: ElevatedButton.styleFrom(
+                shape: CircleBorder(),
+                padding: EdgeInsets.all(20),
+                disabledForegroundColor: Colors.transparent,
+                disabledBackgroundColor: Colors.transparent,
+              ),
+              onPressed: widget.currentIndex < widget.totalLength - 1
+                  ? widget.onNext
+                  : null,
+            ),
+          ],
+        ),
+      ],
     );
   }
+}
+
+class SentenceTile extends StatefulWidget {
+  final Sentence sentence;
+  final VoidCallback onNext;
+  final VoidCallback onPrev;
+  final int currentIndex;
+  final int totalLength;
+
+  SentenceTile({
+    required this.sentence,
+    required this.onNext,
+    required this.onPrev,
+    required this.currentIndex, // Add this line
+    required this.totalLength, // Add this line
+  });
+
+  @override
+  _SentenceTileState createState() => _SentenceTileState();
 }
