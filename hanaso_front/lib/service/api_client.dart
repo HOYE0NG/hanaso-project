@@ -9,10 +9,13 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:hanaso_front/model/word.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hanaso_front/interface/user_interface.dart';
-
+//import openai
+import 'package:dart_openai/dart_openai.dart';
 import '../model/sentence.dart';
+
 class CustomException implements Exception {
   final String message;
 
@@ -30,7 +33,7 @@ class ApiClient {
     _dio.interceptors.add(
       //Cookie jar doesn't work with Dio's InterceptorsWrapper :(
       InterceptorsWrapper(
-        onRequest: (options, handler) async{
+        onRequest: (options, handler) async {
           final prefs = await SharedPreferences.getInstance();
           List<String>? cookies = prefs.getStringList('cookies');
           if (cookies != null) {
@@ -40,7 +43,7 @@ class ApiClient {
           return handler.next(options); // continue// Print request headers
 
         },
-        onResponse: (response, handler) async{
+        onResponse: (response, handler) async {
           // Extract cookies from response headers and save them in CookieJar
           var cookies = response.headers['set-cookie'];
           print(cookies);
@@ -54,8 +57,8 @@ class ApiClient {
     );
   }
 
-  Future<Response> signUp(
-      String username, String password, String imageUrl) async {
+  Future<Response> signUp(String username, String password,
+      String imageUrl) async {
     try {
       Response response = await _dio.post(
         '$BASE_URL/api/users',
@@ -91,7 +94,7 @@ class ApiClient {
     if (image == null) {
       ByteData data = await rootBundle.load('assets/default_avatar.png');
       List<int> bytes =
-          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       request.files.add(http.MultipartFile.fromBytes(
         'img',
         bytes,
@@ -118,11 +121,11 @@ class ApiClient {
   FutureOr<bool> logout() async {
     try {
       Response response =
-          await _dio.get('$BASE_URL/api/users/logout');
+      await _dio.get('$BASE_URL/api/users/logout');
       if (response.statusCode != 200) {
         throw Exception('Failed to logout');
       }
-      else{
+      else {
         final prefs = await SharedPreferences.getInstance();
         await prefs.clear(); // Clear all data
         return true;
@@ -164,7 +167,9 @@ class ApiClient {
     try {
       Response response = await _dio.get('$BASE_URL/api/words/$id');
       if (response.statusCode == 200) {
-        List<Word> words = (response.data as List).map((i) => Word.fromJson(i)).toList();
+        List<Word> words = (response.data as List)
+            .map((i) => Word.fromJson(i))
+            .toList();
         return words;
       } else {
         throw Exception('Failed to load words');
@@ -173,6 +178,7 @@ class ApiClient {
       throw Exception('Failed to load words: $e');
     }
   }
+
   Future<void> addFavorite(String id) async {
     try {
       await _dio.post('$BASE_URL/api/favorites', data: {'wordId': id});
@@ -218,12 +224,28 @@ class ApiClient {
     Response response = await _dio.get('$BASE_URL/api/themes/$id');
 
     if (response.statusCode == 200) {
-      List<Sentence> sentence = (response.data as List).map((i) => Sentence.fromJson(i)).toList();
+      List<Sentence> sentence = (response.data as List).map((i) =>
+          Sentence.fromJson(i)).toList();
       return sentence;
     } else {
       throw Exception('Failed to load sentences');
     }
   }
-}
 
+  Future<String> fetchAudioUrl(String text) async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String filePath = '${appDocDir.path}/output';
+
+    File speechFile = await OpenAI.instance.audio.createSpeech(
+      model: "tts-1",
+      input: text,
+      voice: "nova",
+      outputFileName: filePath,
+    );
+    print("test");
+    print(speechFile.path);
+
+    return speechFile.path;
+  }
+}
 

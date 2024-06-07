@@ -68,6 +68,8 @@ class _SentenceTileState extends State<SentenceTile> {
   bool? isCorrect;
   late List<String> shuffledChoices;
   late AudioPlayer player;
+  late ApiClient _apiClient;
+
 
   @override
   void initState() {
@@ -75,11 +77,11 @@ class _SentenceTileState extends State<SentenceTile> {
     shuffledChoices = List<String>.from(widget.sentence.choices);
     shuffledChoices.shuffle();
     player = AudioPlayer();
+    _apiClient = ApiClient();
   }
 
   @override
   void dispose() async {
-    // Be careful : you must `close` the audio session when you have finished with it.
     player.dispose();
     super.dispose();
   }
@@ -97,6 +99,17 @@ class _SentenceTileState extends State<SentenceTile> {
     }
   }
 
+  Future<void> _playAudio(String text) async {
+    try {
+
+      String audioUrl = await _apiClient.fetchAudioUrl(text);
+      await player.setVolume(1.0);
+      await player.play(DeviceFileSource(audioUrl));
+    } catch (e) {
+      print('Failed to play audio: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String sentenceWithBlank = widget.sentence.sentence
@@ -109,21 +122,29 @@ class _SentenceTileState extends State<SentenceTile> {
           // Display currentIndex and totalLength
           style: TextStyle(fontSize: 24),
         ),
-        Row(
+    Container(
+
+    margin: const EdgeInsets.only(left:20.0,right:20.0), // Add padding here
+    child:
+    Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
                 icon: Icon(Icons.volume_up),
-                onPressed: null, // TODO: Implement playSentenceAudio function
+                onPressed:() {
+                  _playAudio(widget.sentence.sentence); // Play the sentence audio
+                },
               ),
-              Text(
-                sentenceWithBlank,
-                style: TextStyle(fontSize: 24),
+              Expanded( // Add this line
+                child: Text(
+                  sentenceWithBlank,
+                  style: TextStyle(fontSize: 24),
+                ),
               ),
             ],
 
         ),
-
+    ),
         Text(
           widget.sentence.koreanMeaning,
           style: TextStyle(fontSize: 18),

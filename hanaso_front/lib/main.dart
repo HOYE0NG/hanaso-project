@@ -3,11 +3,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hanaso_front/page/sign_in/log_in.dart';
 import 'package:hanaso_front/page/home/home.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:dart_openai/dart_openai.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
+  await dotenv.load(fileName: ".env");
+  OpenAI.apiKey=dotenv.env['OPENAI_API_KEY']!;
   runApp(const MyApp());
 }
 
