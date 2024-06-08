@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hanaso_front/model/word.dart';
 import 'package:hanaso_front/service/api_client.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class WordPage extends StatefulWidget {
   final int id;
@@ -57,9 +58,15 @@ class WordTile extends StatefulWidget {
 class _WordTileState extends State<WordTile> {
   bool isStar=false;
 
+  late AudioPlayer player;
+  late ApiClient _apiClient;
+
   @override
   void initState() {
     super.initState();
+
+    player = AudioPlayer();
+    _apiClient = ApiClient();
     isStar = widget.word.isStar;
   }
 
@@ -78,6 +85,24 @@ class _WordTileState extends State<WordTile> {
       });
     } catch (e) {
       // Handle error
+    }
+  }
+
+
+  @override
+  void dispose() async {
+    player.dispose();
+    super.dispose();
+  }
+
+  Future<void> _playAudio(String text) async {
+    try {
+
+      String audioUrl = await _apiClient.fetchAudioUrl(text);
+      //await player.setVolume(1.0);
+      await player.play(DeviceFileSource(audioUrl));
+    } catch (e) {
+      print('Failed to play audio: $e');
     }
   }
 
@@ -103,7 +128,7 @@ class _WordTileState extends State<WordTile> {
             IconButton(
               icon: Icon(Icons.volume_up),
               onPressed: () {
-                // TODO: Implement sound playing functionality
+                _playAudio(widget.word.word);
               },
             ),
           ],
