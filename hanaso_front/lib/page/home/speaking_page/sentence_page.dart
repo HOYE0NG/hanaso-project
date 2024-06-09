@@ -66,10 +66,11 @@ class _SentencePageState extends State<SentencePage> {
 class _SentenceTileState extends State<SentenceTile> {
   String? selectedChoice;
   bool? isCorrect;
+  bool isAnswered = false;
+  int score = 0;
   late List<String> shuffledChoices;
   late AudioPlayer player;
   late ApiClient _apiClient;
-
 
   @override
   void initState() {
@@ -95,13 +96,13 @@ class _SentenceTileState extends State<SentenceTile> {
       setState(() {
         selectedChoice = null;
         isCorrect = null;
+        isAnswered = false;
       });
     }
   }
 
   Future<void> _playAudio(String text) async {
     try {
-
       String audioUrl = await _apiClient.fetchAudioUrl(text);
       await player.setVolume(1.0);
       await player.play(DeviceFileSource(audioUrl));
@@ -117,34 +118,44 @@ class _SentenceTileState extends State<SentenceTile> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          '${widget.currentIndex + 1}/${widget.totalLength}',
-          // Display currentIndex and totalLength
-          style: TextStyle(fontSize: 24),
+        //SizedBox(height: 1.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(
+              '점수: $score', // Display the current score
+              style: TextStyle(fontSize: 24),
+            ),
+            Text(
+              '${widget.currentIndex + 1}/${widget.totalLength}',// Display the total number of sentences
+              style: TextStyle(fontSize: 24),
+            ),
+          ],
         ),
-    Container(
-
-    margin: const EdgeInsets.only(left:20.0,right:20.0), // Add padding here
-    child:
-    Row(
+        Container(
+          margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+          // Add padding here
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
                 icon: Icon(Icons.volume_up),
-                onPressed:() {
-                  _playAudio(widget.sentence.sentence); // Play the sentence audio
+                onPressed: () {
+                  player.setVolume(1.0);
+                  _playAudio(
+                      widget.sentence.sentence); // Play the sentence audio
                 },
               ),
-              Expanded( // Add this line
+              Expanded(
+                // Add this line
                 child: Text(
                   sentenceWithBlank,
                   style: TextStyle(fontSize: 24),
                 ),
               ),
             ],
-
+          ),
         ),
-    ),
         Text(
           widget.sentence.koreanMeaning,
           style: TextStyle(fontSize: 18),
@@ -158,20 +169,38 @@ class _SentenceTileState extends State<SentenceTile> {
                 choice,
                 style: TextStyle(fontSize: 16),
               ),
-              onPressed: () async {
+              style: ElevatedButton.styleFrom(
+                disabledForegroundColor: Theme.of(context).colorScheme.primary ,
+                disabledBackgroundColor: choice == selectedChoice?
+                Theme.of(context).colorScheme.primaryContainer : Theme.of(context).colorScheme.primaryContainer.withOpacity(0.2),
+              ),
+              onPressed: isAnswered ? null : () async { // Disable the button if isAnswered is true
                 setState(() {
                   selectedChoice = choice;
                   isCorrect = choice == widget.sentence.blankWord;
+                  isAnswered = true;
+
                 });
                 if (isCorrect!) {
+                  score += 10;
+                }
+                if (isCorrect!) {
+                  await player.setVolume(0.1);
                   await player.play(AssetSource('correct_sound.mp3'));
                 } else {
+                  await player.setVolume(0.1);
                   await player.play(AssetSource('wrong_sound.mp3'));
                 }
               },
             ),
           );
         }).toList(),
+
+        if (selectedChoice != null && !isCorrect!) // If the selected choice is incorrect
+          Text(
+            '정답: ${widget.sentence.blankWord}', // Display the correct answer
+            style: TextStyle(fontSize: 24),
+          ),
         if (selectedChoice != null)
           Text(
             isCorrect! ? 'O' : 'X',
@@ -185,30 +214,21 @@ class _SentenceTileState extends State<SentenceTile> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ElevatedButton(
-              child: Icon(Icons.arrow_back),
-              style: ElevatedButton.styleFrom(
-                shape: CircleBorder(),
-                padding: EdgeInsets.all(20),
-                disabledForegroundColor: Colors.transparent,
-                disabledBackgroundColor: Colors.transparent,
+            if (widget.currentIndex != widget.totalLength - 1)
+              ElevatedButton(
+                child: Text('다음 문장으로'),
+                style: ElevatedButton.styleFrom(
+                  disabledForegroundColor: Colors.transparent,
+                  disabledBackgroundColor: Colors.transparent,
+                ),
+                onPressed: isAnswered == true && widget.currentIndex < widget.totalLength - 1
+                    ? widget.onNext
+                    : null, // Check if isCorrect is true before calling onNext
               ),
-              onPressed: widget.currentIndex > 0 ? widget.onPrev : null,
-            ),
-            ElevatedButton(
-              child: Icon(Icons.arrow_forward),
-              style: ElevatedButton.styleFrom(
-                shape: CircleBorder(),
-                padding: EdgeInsets.all(20),
-                disabledForegroundColor: Colors.transparent,
-                disabledBackgroundColor: Colors.transparent,
-              ),
-              onPressed: widget.currentIndex < widget.totalLength - 1
-                  ? widget.onNext
-                  : null,
-            ),
+
           ],
         ),
+        SizedBox(height: 20.0),
       ],
     );
   }
